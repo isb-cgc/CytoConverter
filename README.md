@@ -32,6 +32,49 @@ Adjust parameters for your specific run:
 - output: Output file containing genomic coordinates and indications of gain or loss for all samples.
 - log: Log file containing any warnings or errors encountered during processing.
 
+
+## Code Structure
+
+The code has been split into multiple "modules" and structured as follows.
+
+- cytoconverter.R: includes the main entrypoint for CytoConverter. 
+- rowparser.R: includes control flow for parsing rows of a karyotype table.
+- colparser.R: includes control flow for parsing each cell line or component of a karyotype. 
+- merge.R: includes helper functions for handling and merging intervals.
+- utils.R: includes utility functions.  
+- cytobands.R: includes a function for getting cytobands for translocations and insertions.  
+
+
+```
+   ┌────────────────────┐      ┌───────────────────────────┐
+   │ cytoconverter.R    │      │ merge.R                   │
+   │                    │      │                           │
+   │    CytoConverter() │      │    insertSection()        │
+   └───┬────────────────┘      │    deleteIntersections()  │
+       │                       │    getContiguousSection() │
+       │                       │    mergeAdjacentSections()│
+       │                       │    mergeTable()           │
+       │                       │    mergeDel()             │
+   ┌───▼───────────┐           │    mergeDelmat()          │
+   │ rowparser.R   ├───────────►    bigDelMerge()          │
+   │               │           │    mergeDeletions()       │
+   │    rowparse() │           └───────────────────────────┘
+   └───┬────────┬──┘
+       │        │              ┌──────────────────────┐
+       │        └──────────────► utils.R              │
+       │                       │                      │
+       │                       │    positionSorter()  │
+   ┌───▼────────────┐          │    mergeIntOverlap() │
+   │ colparser.R    ├──────────►    detectAdd()       │
+   │                │          └──────────────────────┘
+   │     colparse() │
+   └────────────┬───┘          ┌───────────────────┐
+                │              │ cytobands.R       │
+                └──────────────►                   │
+                               │    getCytoBands() │
+                               └───────────────────┘
+```
+
 ## Additional Information
 
 Builds are at 850 resolution and provided for human genome builds GRCh38, hg19, hg18, and hg17
